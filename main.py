@@ -9,9 +9,12 @@ class Player:
         self.rodzaj_obr = "miażdżone"
         self.przedmioty = {}
         self.energia = 3
+        self.pd = 0
 
     def statystyki(self):
-        print(f"Statystyki gracza: \nŻycie: {self.zycie}, Pancerz: {self.pancerz}, Atak: {self.atak}, Pieniądze: {self.pieniadze}, Rodzaj obrażeń: {self.rodzaj_obr}, Przedmioty: {self.przedmioty}, Energia: {self.energia}")
+        print(f"Statystyki gracza: \nŻycie: {self.zycie}, Pancerz: {self.pancerz}, Atak: {self.atak}, Pieniądze: "
+              f"{self.pieniadze}, Rodzaj obrażeń: {self.rodzaj_obr}, Przedmioty: {self.przedmioty}, Energia: "
+              f"{self.energia}, Punkty doświadczenia: {self.pd}")
 
     def leczenie(self):
         if 50 <= self.zycie <= 90:
@@ -30,6 +33,23 @@ class Player:
             wytrzymalosc_przeciwnika -= damage
             enemy.zycie = max(0, wytrzymalosc_przeciwnika)
 
+    def umiejetnosc(self, enemy):
+        liczba_uzyc = 2
+        wybor = input(f"Wybierz umiejętność: koncentracja - 1, nieposkromiona siła - 2: ")
+        if liczba_uzyc > 0:
+            if wybor == "1":
+                if 50 <= self.zycie <= 90:
+                    self.zycie += 20
+                    print("Gracz leczy się za +20hp")
+                elif 1 <= self.zycie <= 49:
+                    self.zycie += 40
+                    print("Gracz leczy się za +40hp")
+            elif wybor == "2":
+                self.atak += 2
+        else:
+            print("Nie możesz już użyć umiejętności")
+        liczba_uzyc -= 1
+
 class Enemy:
     def __init__(self):
         self.zycie = 50
@@ -41,7 +61,8 @@ class Enemy:
         }
 
     def statystyki(self):
-        print(f"Statystyki przeciwnika: \nŻycie: {self.zycie}, Pancerz: {self.pancerz}, Atak: {self.atak}, Rodzaj obrażeń: {self.rodzaj_obr}, Przedmioty: {self.przedmioty}")
+        print(f"Statystyki przeciwnika: \nŻycie: {self.zycie}, Pancerz: {self.pancerz}, Atak: {self.atak}, "
+              f"Rodzaj obrażeń: {self.rodzaj_obr}, Przedmioty: {self.przedmioty}")
 
     def leczenie(self):
         if 50 <= self.zycie <= 90:
@@ -60,16 +81,8 @@ class Enemy:
             wytrzymalosc_gracza -= damage
             player.zycie = max(0, wytrzymalosc_gracza)
 
-
 Gracz = Player()
 Przeciwnik = Enemy()
-
-
-
-
-
-
-
 def bitwa():
     while True:
         Gracz.statystyki()
@@ -82,42 +95,72 @@ def bitwa():
         elif decyzja_przeciwnika == 2:
             Przeciwnik.leczenie()
 
-        decyzja_gracza = input("Wykonaj ruch: (1 - atak, 2 - leczenie): ")
+        decyzja_gracza = input("Wykonaj ruch: (atak - 1, leczenie - 2, umiejętność - 3): ")
 
         if decyzja_gracza == "1":
             Gracz.wykonaj_atak(Przeciwnik)
         elif decyzja_gracza == "2":
             Gracz.leczenie()
+        elif decyzja_gracza == "3":
+            Gracz.umiejetnosc(Przeciwnik)
+
 
         if Gracz.zycie <= 0:
             print("Przegrałeś!")
             break
         elif Przeciwnik.zycie <= 0:
             print("Wygrałeś!")
+            Gracz.pd += 10
             break
 
     print("Koniec bitwy!")
 
 def eksploracja():
+    lokacje = {1: "jaskinie",
+               2: "pustkowia",
+               3: "dziki las",
+               4: "opuszczoną wioskę",
+               5: "miasto",
+               6: "drogę"}
+
     while True:
-        print("Widzisz przed sobą jaskinię...")
-        decyzja = input("Wejdź - 1, Omiń - 2, Szukaj innej drogi - 3, Poczekaj - 4, Zobacz statystyki - 5: ")
-        if decyzja == "1":
-            print("Znajdujesz ghoula lv1, zaczyna się bitwa...")
-            bitwa()
-            break
-        elif decyzja == "2":
-            print("Bezpiecznie omijasz jaskinię, słyszysz jedynie niknące krzyki zza pleców, ale nie zważasz na to...")
-            Gracz.energia -= 1
-            print("Męczysz się tą ucieczką, tracisz energię...")
-            break
-        elif decyzja == "3":
-            print("Czekasz...")
-            Gracz.energia += 1
-            print("Odpoczywasz, zyskujesz energię...")
-        elif decyzja == "4":
-            pass
-        elif decyzja == "5":
-            Gracz.statystyki()
+        jaskinia = True
+        losowa_lokacja = random.randint(1, 6)
+
+        if losowa_lokacja == 1:
+            print(f"Podczas swojej tułaczki znajdujesz {lokacje[losowa_lokacja]}")
+            while jaskinia == True:
+                decyzja = input("Wejdź - 1, Omiń - 2, Szukaj innej drogi - 3, Poczekaj - 4, Zobacz statystyki - 5: ")
+                if decyzja == "1":
+                    print("Znajdujesz ghoula lv1, zaczyna się bitwa...")
+                    bitwa()
+                    jaskinia = False
+                elif decyzja == "2":
+                    print(
+                        "Bezpiecznie omijasz jaskinię, słyszysz jedynie niknące krzyki zza pleców, ale nie zważasz na to...")
+                    Gracz.energia -= 1
+                    print("Męczysz się tą ucieczką, tracisz energię...")
+                    jaskinia = False
+                elif decyzja == "3":
+                    print("Znajdujesz inną drogę...")
+                    Gracz.energia -= 1
+                    print("Tracisz energię")
+                elif decyzja == "4":
+                    print("Czekasz...")
+                    Gracz.energia += 1
+                    print("Odpoczywasz, zyskujesz energię, ale tracisz pd...")
+                elif decyzja == "5":
+                    Gracz.statystyki()
+
+        elif losowa_lokacja == 2:
+            print(f"Podczas swojej tułaczki znajdujesz {lokacje[losowa_lokacja]}")
+        elif losowa_lokacja == 3:
+            print(f"Podczas swojej tułaczki znajdujesz {lokacje[losowa_lokacja]}")
+        elif losowa_lokacja == 4:
+            print(f"Podczas swojej tułaczki znajdujesz {lokacje[losowa_lokacja]}")
+        elif losowa_lokacja == 5:
+            print(f"Podczas swojej tułaczki znajdujesz {lokacje[losowa_lokacja]}")
+        elif losowa_lokacja == 6:
+            print(f"Podczas swojej tułaczki znajdujesz {lokacje[losowa_lokacja]}")
 
 eksploracja()
