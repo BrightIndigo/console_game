@@ -142,9 +142,24 @@ def eksploracja():
                     print("Męczysz się tą ucieczką, tracisz energię...")
                     jaskinia = False
                 elif decyzja == "3":
-                    print("Znajdujesz inną drogę...")
-                    Gracz.energia -= 1
-                    print("Tracisz energię")
+                    przypadki = {1: "Znajdujesz inną drogę...",
+                                 2: "Odnosisz ciężkie rany...",
+                                 3: "Znajdujesz przedmiot...",
+                                 4: "Spotykasz na swojej drodze włóczęgę..."}
+
+                    lista_kluczy = list(przypadki.keys())
+                    losowy_przypadek = random.choice(lista_kluczy)
+                    if losowy_przypadek == 1:
+                        Gracz.energia -= 1
+                        print(f"{przypadki[1]} Tracisz energię.")
+                        jaskinia = False
+                    elif losowy_przypadek == 2:
+                        print(f"{przypadki[2]}")
+                    elif losowy_przypadek == 3:
+                        print(f"{przypadki[3]}")
+                    elif losowy_przypadek == 4:
+                        print(f"{przypadki[4]}")
+
                 elif decyzja == "4":
                     print("Czekasz...")
                     Gracz.energia += 1
