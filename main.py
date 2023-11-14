@@ -32,6 +32,7 @@ class Player:
                 damage *= self.przedmioty["nóż"]
             wytrzymalosc_przeciwnika -= damage
             enemy.zycie = max(0, wytrzymalosc_przeciwnika)
+            print(f"Zadałeś {damage} obrażeń!")
 
     def umiejetnosc(self, enemy):
         liczba_uzyc = 2
@@ -46,9 +47,9 @@ class Player:
                     print("Gracz leczy się za +40hp")
             elif wybor == "2":
                 self.atak += 2
+                liczba_uzyc -= 1
         else:
             print("Nie możesz już użyć umiejętności")
-        liczba_uzyc -= 1
 
 class Enemy:
     def __init__(self):
@@ -81,14 +82,15 @@ class Enemy:
                 damage *= self.przedmioty["nóż"]
             wytrzymalosc_gracza -= damage
             player.zycie = max(0, wytrzymalosc_gracza)
+
     def dodaj_poziom(self):
         self.zycie += 70
         self.pancerz += 1
         self.atak += 2
 
-
 Gracz = Player()
 Przeciwnik = Enemy()
+
 def bitwa():
     bitwa = True
     while bitwa:
@@ -196,6 +198,7 @@ def eksploracja():
                     print("Odpoczywasz, zyskujesz energię, ale tracisz pd...")
                 elif decyzja == "5":
                     Gracz.statystyki()
+
 #lokacja 2 -----------------------------------------------------------------------------------------------
         elif losowa_lokacja == 2:
             print(f"Podczas swojej tułaczki znajdujesz {lokacje[losowa_lokacja]}")
