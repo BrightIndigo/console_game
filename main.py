@@ -1,102 +1,19 @@
 import random
+import Player
+import Enemy
+import Statistics
 
-class Player:
-    def __init__(self):
-        self.zycie = 100
-        self.pancerz = 0
-        self.atak = 15
-        self.złoto = 10
-        self.rodzaj_obr = "miażdżone"
-        self.przedmioty = {}
-        self.energia = 3
-        self.pd = 0
-
-    def statystyki(self):
-        print(f"Statystyki gracza: \nŻycie: {self.zycie}, Pancerz: {self.pancerz}, Atak: {self.atak}, Pieniądze: "
-              f"{self.złoto}, Rodzaj obrażeń: {self.rodzaj_obr}, Przedmioty: {self.przedmioty}, Energia: "
-              f"{self.energia}, Punkty doświadczenia: {self.pd}")
-
-    def leczenie(self):
-        if 50 <= self.zycie <= 90:
-            self.zycie += 10
-            print("Gracz leczy się za +10hp")
-        elif 1 <= self.zycie <= 49:
-            self.zycie += 20
-            print("Gracz leczy się za +20hp")
-
-    def wykonaj_atak(self, enemy):
-        if enemy.zycie >= 1:
-            wytrzymalosc_przeciwnika = enemy.zycie + enemy.pancerz
-            damage = self.atak
-            if "nóż" in self.przedmioty:
-                damage *= self.przedmioty["nóż"]
-            wytrzymalosc_przeciwnika -= damage
-            enemy.zycie = max(0, wytrzymalosc_przeciwnika)
-            print(f"Zadałeś {damage} obrażeń!")
-
-    def umiejetnosc(self, enemy):
-        liczba_uzyc = 2
-        wybor = input(f"Wybierz umiejętność: koncentracja - 1, nieposkromiona siła - 2: ")
-        if liczba_uzyc > 0:
-            if wybor == "1":
-                if 50 <= self.zycie <= 90:
-                    self.zycie += 20
-                    print("Gracz leczy się za +20hp")
-                elif 1 <= self.zycie <= 49:
-                    self.zycie += 40
-                    print("Gracz leczy się za +40hp")
-            elif wybor == "2":
-                self.atak += 2
-                liczba_uzyc -= 1
-        else:
-            print("Nie możesz już użyć umiejętności")
-
-class Enemy:
-    def __init__(self):
-        self.poziom = 1
-        self.zycie = 50
-        self.pancerz = 1
-        self.atak = 5
-        self.rodzaj_obr = "kłute"
-        self.przedmioty = {
-            "nóż": 2
-        }
-
-    def statystyki(self):
-        print(f"Statystyki przeciwnika: \nŻycie: {self.zycie}, Pancerz: {self.pancerz}, Atak: {self.atak}, "
-              f"Rodzaj obrażeń: {self.rodzaj_obr}, Przedmioty: {self.przedmioty}")
-
-    def leczenie(self):
-        if 50 <= self.zycie <= 90:
-            self.zycie += 10
-            print("Przeciwnik leczy się za +10hp")
-        elif 1 <= self.zycie <= 49:
-            self.zycie += 20
-            print("Przeciwnik leczy się za +20hp")
-
-    def wykonaj_atak(self, player):
-        if player.zycie >= 1:
-            wytrzymalosc_gracza = player.zycie + player.pancerz
-            damage = self.atak
-            if "nóż" in self.przedmioty:
-                damage *= self.przedmioty["nóż"]
-            wytrzymalosc_gracza -= damage
-            player.zycie = max(0, wytrzymalosc_gracza)
-
-    def dodaj_poziom(self):
-        self.zycie += 70
-        self.pancerz += 1
-        self.atak += 2
-
-Gracz = Player()
-Przeciwnik = Enemy()
-
+Gracz = Player.Player()
+Przeciwnik = Enemy.Enemy()
+Statystyki = Statistics.Statistics()
+przedzialek = "---------------------------------------------------------------------"
 def bitwa():
     bitwa = True
     while bitwa:
         Gracz.statystyki()
+        print(przedzialek)
         Przeciwnik.statystyki()
-
+        print(przedzialek)
         decyzja_przeciwnika = random.randint(1, 2)
 
         if decyzja_przeciwnika == 1:
@@ -115,15 +32,20 @@ def bitwa():
 
         if Gracz.zycie <= 0:
             print("Przegrałeś!")
+            Statystyki.porażki += 1
+            Gracz.pd -= 5
+            print("Tracisz pd...")
             bitwa = False
+            return False
         elif Przeciwnik.zycie <= 0:
-            zwyciestwo = True
+            Statystyki.zwyciestwa += 1
             print("Wygrałeś!")
             Gracz.pd += 10
-            Przeciwnik.poziom += 1
+            Przeciwnik.dodaj_poziom()
             bitwa = False
+            return True
     print("Koniec bitwy!")
-    return zwyciestwo
+
 
 def eksploracja():
     lokacje = {1: "jaskinie",
@@ -131,19 +53,33 @@ def eksploracja():
                3: "dziki las",
                4: "opuszczoną wioskę",
                5: "miasto",
-               6: "drogę"}
+               }
 
     while True:
         jaskinia = True
-        losowa_lokacja = random.randint(1, 6)
+        wybrana_lokacja = int(input(f"Wybierz gdzie chcesz się udać (1) - jaskinie, "
+                                f"(2) - pustkowia, (3) - dziki las, "
+                                f"(4) - opuszczona wioska, (5) - miasto :"))
 
-        if losowa_lokacja == 1:
-            print(f"Podczas swojej tułaczki znajdujesz {lokacje[losowa_lokacja]}")
+        if wybrana_lokacja == 1:
+            print(f"Widzisz: {lokacje[wybrana_lokacja]}")
             while jaskinia == True:
                 decyzja = input("Wejdź - 1, Omiń - 2, Szukaj innej drogi - 3, Poczekaj - 4, Zobacz statystyki - 5: ")
                 if decyzja == "1":
                     print(f"Znajdujesz ghoula poziom {Przeciwnik.poziom}, zaczyna się bitwa...")
-                    bitwa()
+                    print(przedzialek)
+                    rezultat_bitwy = bitwa()
+                    if rezultat_bitwy == True:
+                        print("Ghoul leży z odciętą głową... Posoka leje się z rozwartej szyi potwora.")
+                        przedmioty = ["łańcuch z niebieskim brylantem", "tarcza z czarnym krzyżem", "złoty kielich z czerwonymi szmaragdami"]
+                        przedmiot = random.choice(przedmioty)
+                        czy = input(f"Chodząc po jaskinii dostrzegasz {przedmiot}. Czy chcesz go wziąć? (T) | (N)")
+                        if czy == "t":
+                            Gracz.przedmioty.append(przedmiot)
+                            print(f"Bierzesz {przedmiot}")
+                        elif czy == "n":
+                            Gracz.pd += 8
+                            print("Zdobywasz 8 pd")
                     jaskinia = False
                 elif decyzja == "2":
                     print(
@@ -200,19 +136,16 @@ def eksploracja():
                     Gracz.statystyki()
 
 #lokacja 2 -----------------------------------------------------------------------------------------------
-        elif losowa_lokacja == 2:
-            print(f"Podczas swojej tułaczki znajdujesz {lokacje[losowa_lokacja]}")
+        #elif losowa_lokacja == 2:
+            #print(f"Podczas swojej tułaczki znajdujesz {lokacje[losowa_lokacja]}")
 # lokacja 3 -----------------------------------------------------------------------------------------------
-        elif losowa_lokacja == 3:
-            print(f"Podczas swojej tułaczki znajdujesz {lokacje[losowa_lokacja]}")
+        #elif losowa_lokacja == 3:
+            #print(f"Podczas swojej tułaczki znajdujesz {lokacje[losowa_lokacja]}")
 # lokacja 4 -----------------------------------------------------------------------------------------------
-        elif losowa_lokacja == 4:
-            print(f"Podczas swojej tułaczki znajdujesz {lokacje[losowa_lokacja]}")
+        #elif losowa_lokacja == 4:
+            #print(f"Podczas swojej tułaczki znajdujesz {lokacje[losowa_lokacja]}")
 # lokacja 5 -----------------------------------------------------------------------------------------------
-        elif losowa_lokacja == 5:
-            print(f"Podczas swojej tułaczki znajdujesz {lokacje[losowa_lokacja]}")
-# lokacja 6 -----------------------------------------------------------------------------------------------
-        elif losowa_lokacja == 6:
-            print(f"Podczas swojej tułaczki znajdujesz {lokacje[losowa_lokacja]}")
+        #elif losowa_lokacja == 5:
+            #print(f"Podczas swojej tułaczki znajdujesz {lokacje[losowa_lokacja]}")
 
 eksploracja()
