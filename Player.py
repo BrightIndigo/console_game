@@ -1,7 +1,10 @@
-BLUE = "\033[94m"
 RESET = "\033[0m"
-YELLOW = "\033[93m"
+RED = "\033[91m"
 GREEN = "\033[92m"
+YELLOW = "\033[93m"
+BLUE = "\033[94m"
+PURPLE = "\033[95m"
+CYAN = "\033[96m"
 
 class Player:
     def __init__(self):
@@ -18,11 +21,16 @@ class Player:
         self.pd = 0
         self.złoto = 10
         self.rodzaj_obr = "miażdżone"
+        self.upicie = 0
 
     def statystyki(self):
         print(BLUE + f"Statystyki gracza: \nŻycie: {self.zycie}, Pancerz: {self.pancerz}, Atak: {self.atak}"
-                     f"Mana: {self.mana} {RESET}")
+                     f" Mana: {self.mana} {RESET}")
 
+    def statystyki_zaawansowane(self):
+        print(GREEN + f"Statystyki zaawansowane gracza: \n Przedmioty: {self.przedmioty}, Umiejętność_targowania: {self.umiejętność_targowania}, Atak: {self.atak},"
+                    f" Kondycja: {self.kondycja}, Udźwig: {self.udźwig}, Energia: {self.energia}, PD: {self.pd},"
+                    f" Złoto: {self.złoto}, Rodzaj obrażeń: {self.rodzaj_obr} {RESET}")
     def leczenie(self):
         if 50 <= self.zycie <= 90:
             self.zycie += 10
@@ -73,3 +81,21 @@ class Player:
             enemy.atak -= 3
             print(YELLOW + f"Tarcza z czerwonym krzyżem daje Ci +20 pancerza i obniża przeciwnikowi"
                            f"atak o -3 {RESET}")
+        if "złoty kielich z czerwonymi szmaragdami" in self.przedmioty:
+            enemy.zycie -= 10
+            self.zycie += 10
+            print(YELLOW + f"złoty kielich z czerwonymi szmaragdami kradnie 10pkt zdrowia przeciwnikowi "
+                           f"i daje tobie.{RESET}")
+        if "kostur z czerwonym diademem" in self.przedmioty:
+            print("Wybierz zaklęcie:")
+            print("1 - nawałnica")
+            print("2 - magiczna bariera")
+            decyzja = input(">")
+            if decyzja == "1":
+                enemy.zycie -= 90
+                print(YELLOW + f"Zadajesz 90pkt obrażeń {RESET}")
+            elif decyzja == "2":
+                self.pancerz += 120
+                print(YELLOW + f"Tworzysz magiczną barierę wokół siebie, która daje Ci 120pkt pancerza {RESET}")
+            else:
+                print("Niezrozumiałe polecenie...")
