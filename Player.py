@@ -8,16 +8,20 @@ class Player:
         self.zycie = 100
         self.pancerz = 0
         self.atak = 15
-        self.złoto = 10
-        self.rodzaj_obr = "miażdżone"
+        self.mana = 10
+
         self.przedmioty = []
+        self.umiejętność_targowania = 0
+        self.kondycja = 0
+        self.udźwig = 4
         self.energia = 2
         self.pd = 0
+        self.złoto = 10
+        self.rodzaj_obr = "miażdżone"
 
     def statystyki(self):
-        print(BLUE + f"Statystyki gracza: \nŻycie: {self.zycie}, Pancerz: {self.pancerz}, Atak: {self.atak}, Pieniądze: "
-              f"{self.złoto}, Rodzaj obrażeń: {self.rodzaj_obr}, Przedmioty: {self.przedmioty}, Energia: "
-              f"{self.energia}, Punkty doświadczenia: {self.pd} {RESET}")
+        print(BLUE + f"Statystyki gracza: \nŻycie: {self.zycie}, Pancerz: {self.pancerz}, Atak: {self.atak}"
+                     f"Mana: {self.mana} {RESET}")
 
     def leczenie(self):
         if 50 <= self.zycie <= 90:
@@ -42,27 +46,30 @@ class Player:
 
 
     def umiejetnosc(self, enemy):
-        liczba_uzyc = 2
         wybor = input(f"Wybierz umiejętność: koncentracja - 1, nieposkromiona siła - 2: ")
-        if liczba_uzyc > 0:
+        if self.mana > 0:
             if wybor == "1":
                 if 50 <= self.zycie <= 90:
+                    self.mana -= 2
                     self.zycie += 20
-                    print(GREEN + f"Gracz leczy się za +20hp {RESET}")
+                    print(GREEN + f"Leczysz się za +20hp, -2pkt many {RESET}")
                 elif 1 <= self.zycie <= 49:
+                    self.mana -= 4
                     self.zycie += 40
-                    print(GREEN + f"Gracz leczy się za +40hp {RESET}")
+                    print(GREEN + f"Leczysz się za +40hp, -4pkt many {RESET}")
             elif wybor == "2":
                 self.atak += 2
-                liczba_uzyc -= 1
-                print(GREEN + f"Zwiększasz swój atak o 2 {RESET}")
+                self.mana -= 2
+                print(GREEN + f"Zwiększasz swój atak o 2, tracisz 2pkt many{RESET}")
         else:
             print(GREEN + f"Nie możesz już użyć umiejętności {RESET}")
 
-        if liczba_uzyc > 0:
+        if self.mana > 0:
             print(GREEN + f"Możesz użyć umiejętności ponownie {RESET}")
 
     def przedmioty_specjalne(self, enemy):
         if "tarcza z czarnym krzyżem" in self.przedmioty:
-            self.pancerz += 10
+            self.pancerz += 20
             enemy.atak -= 3
+            print(YELLOW + f"Tarcza z czerwonym krzyżem daje Ci +20 pancerza i obniża przeciwnikowi"
+                           f"atak o -3 {RESET}")

@@ -57,14 +57,16 @@ def eksploracja():
 
     while True:
         jaskinia = True
-        wybrana_lokacja = int(input(f"Wybierz gdzie chcesz się udać (1) - jaskinie, "
-                                f"(2) - pustkowia, (3) - dziki las, "
-                                f"(4) - opuszczona wioska, (5) - miasto :"))
+        print(f"Wybierz gdzie chcesz się udać (1) - jaskinie, "
+            f"(2) - pustkowia, (3) - dziki las, "
+            f"(4) - opuszczona wioska, (5) - miasto :")
+        wybrana_lokacja = int(input(">"))
 
         if wybrana_lokacja == 1:
             print(f"Widzisz: {lokacje[wybrana_lokacja]}")
             while jaskinia == True:
-                decyzja = input("Wejdź - 1, Omiń - 2, Szukaj innej drogi - 3, Poczekaj - 4, Zobacz statystyki - 5: ")
+                print("1 - Wejdź, 2 - Omiń, 3 - Szukaj innej drogi, 4 - Poczekaj, 5 - Zobacz statystyki: ")
+                decyzja = input(">")
                 if decyzja == "1":
                     print(f"Znajdujesz ghoula poziom {Przeciwnik.poziom}, zaczyna się bitwa...")
                     print(przedzialek)
@@ -73,7 +75,8 @@ def eksploracja():
                         print("Ghoul leży z odciętą głową... Posoka leje się z rozwartej szyi potwora.")
                         przedmioty = ["łańcuch z niebieskim brylantem", "tarcza z czarnym krzyżem", "złoty kielich z czerwonymi szmaragdami"]
                         przedmiot = random.choice(przedmioty)
-                        czy = input(f"Chodząc po jaskinii dostrzegasz {przedmiot}. Czy chcesz go wziąć? (T) | (N)")
+                        print(f"Chodząc po jaskinii dostrzegasz {przedmiot}. Czy chcesz go wziąć? (T) | (N)")
+                        czy = input(">")
                         if czy == "t":
                             Gracz.przedmioty.append(przedmiot)
                             print(f"Bierzesz {przedmiot}")
@@ -136,16 +139,31 @@ def eksploracja():
                     Gracz.statystyki()
 
 #lokacja 2 -----------------------------------------------------------------------------------------------
-        #elif losowa_lokacja == 2:
+        #elif wybrana_lokacja == 2:
             #print(f"Podczas swojej tułaczki znajdujesz {lokacje[losowa_lokacja]}")
 # lokacja 3 -----------------------------------------------------------------------------------------------
-        #elif losowa_lokacja == 3:
+        #elif wybrana_lokacja == 3:
             #print(f"Podczas swojej tułaczki znajdujesz {lokacje[losowa_lokacja]}")
 # lokacja 4 -----------------------------------------------------------------------------------------------
-        #elif losowa_lokacja == 4:
+        #elif wybrana_lokacja == 4:
             #print(f"Podczas swojej tułaczki znajdujesz {lokacje[losowa_lokacja]}")
 # lokacja 5 -----------------------------------------------------------------------------------------------
-        #elif losowa_lokacja == 5:
-            #print(f"Podczas swojej tułaczki znajdujesz {lokacje[losowa_lokacja]}")
+        elif wybrana_lokacja == 5:
+            print(f"Dostrzegasz {lokacje[wybrana_lokacja]}")
+            miasto = True
+            while miasto == True:
+                print("Wybierz gdzie chcesz pójść: 1 - sklep, 2 - arena, 3 - hotel, 4 - przespacerować się po mieście")
+                decyzja = input(">")
+                if decyzja == "1":
+                    print("Sprzedawca wita cię z uśmiechem i prezentuje swoje przedmioty...")
+                    print("1 - miecz dwuręczny (26 obr, zredukowanie obrażeń przeciwnika o -2pkt, koszt: 10 szt. złota)")
+                    print("2 - zbroja płytowa (52 pancerza, koszt: 20 szt. złota)")
+                    print("3 - kostur z czerwonym diademem (300 many, 80 obrażeń, 2 zaklęcia, koszt: 50 szt. złota)")
+                    wybor = input(">")
+                    if wybor == "1" and Gracz.złoto >= 10:
+                        dl = len(Gracz.przedmioty)
+                        Gracz.przedmioty[dl] = "Miecz dwuręczny"
+
+
 
 eksploracja()
