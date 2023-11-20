@@ -14,7 +14,8 @@ class Statistics:
         self.włóczędzy = 0
         self.wilki = 0
         self.zadania_wykonane = 0
+        self.karczmarz = []
         self.zadanie_ghoul = False
         self.zadanie_wilk = False
         self.zadanie_sowa = False
-        self.karczmarz = []
+        self.zadanie_upicie = False

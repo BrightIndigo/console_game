@@ -5,16 +5,17 @@ import Statistics
 import sys
 
 RESET = "\033[0m"
-RED = "\033[91m"
-GREEN = "\033[92m"
-YELLOW = "\033[93m"
-BLUE = "\033[94m"
-PURPLE = "\033[95m"
-CYAN = "\033[96m"
+RED = "\033[91m" #przeciwnik / negatywne zdarzenia
+GREEN = "\033[92m" #pozytywne zdarzenia / magia / przedmioty
+YELLOW = "\033[93m" #zadane obrażenia przeciwnikowi
+BLUE = "\033[94m" #statystyki gracza
+PURPLE = "\033[95m" #zadania
+CYAN = "\033[96m" #przedmioty w sklepie
 
 Gracz = Player.Player()
 Przeciwnik = Enemy.Enemy()
 Statystyki = Statistics.Statistics()
+
 przedzialek = "---------------------------------------------------------------------"
 def bitwa():
     Gracz.energia -= 1
@@ -50,7 +51,7 @@ def bitwa():
             print("Przegrałeś!")
             Statystyki.porażki += 1
             Gracz.pd -= 5
-            print("Tracisz pd...")
+            print(RED+"-5 doświadczenia, +1 porażki"+RESET)
             bitwa = False
             return False
         elif Przeciwnik.zycie <= 0:
@@ -104,6 +105,8 @@ def eksploracja():
                         elif czy == "n":
                             Gracz.pd += 8
                             print("Zdobywasz 8 pd")
+                        else:
+                            print("Niezrozumiała komenda")
                     jaskinia = False
                 elif decyzja == "2":
                     print(
@@ -147,7 +150,8 @@ def eksploracja():
                                 print("Włóczęga miał ze sobą 20 szt. złota, zabierasz je...")
                         elif odpowiedz == 'b':
                             Gracz.złoto = 0
-                            print("Oddajesz całe złoto...")
+                            Statystyki.porażki += 1
+                            print(RED + "Oddajesz całe złoto..." + RESET)
                         elif odpowiedz == 'c':
                             a = random.randint(1, 2)
                             if a == 1:
@@ -161,13 +165,18 @@ def eksploracja():
                 elif decyzja == "4":
                     print("Czekasz...")
                     Gracz.energia += 1
-                    print("Odpoczywasz, zyskujesz energię, ale tracisz pd...")
+                    Gracz.pd -= 2
+                    print("Odpoczywasz, zyskujesz energię...")
+                    print(GREEN + "+1 energii" + RESET)
+                    print(RED + "-2 pd" + RESET)
                 elif decyzja == "statystyki":
                     Gracz.statystyki()
                 elif decyzja == "z statystyki":
                     Gracz.statystyki_zaawansowane()
                 else:
                     print("Niezrozumiała komenda...")
+        elif Gracz.energia <= 0:
+            print("Nie masz wystarczająco dużo energii...")
 #lokacja 2 -----------------------------------------------------------------------------------------------
         #elif wybrana_lokacja == 2:
             #print(f"Podczas swojej tułaczki znajdujesz {lokacje[losowa_lokacja]}")
@@ -237,16 +246,17 @@ def eksploracja():
 # lokacja 4 -----------------------------------------------------------------------------------------------
         #elif wybrana_lokacja == 4:
             #print(f"Podczas swojej tułaczki znajdujesz {lokacje[losowa_lokacja]}")
-# lokacja 5 -----------------------------------------------------------------------------------------------
+#Miasto====================================================================================================
         elif wybrana_lokacja == "5":
-            print(f"Dostrzegasz {lokacje[5]}")
             miasto = True
+            print(f"Dostrzegasz miasto")
             while miasto == True:
-                print("Wybierz co chcesz zrobić/gdzie się udać: 1 - sklep, 2 - tawerna, 3 - hotel, 4 - spacer po mieście, 5 - wyjść")
+                print("Wybierz co chcesz zrobić/gdzie się udać: 1 - sklep, 2 - tawerna, 3 - hotel, 4 - wyjść")
                 decyzja = input(">")
                 if decyzja == "1":
                     print("Sprzedawca wita cię z uśmiechem i prezentuje swoje przedmioty...")
-                    print("1 - miecz dwuręczny (26 obr, zredukowanie obrażeń przeciwnika o -2pkt, koszt: 10 szt. złota)")
+                    print(
+                        "1 - miecz dwuręczny (26 obr, zredukowanie obrażeń przeciwnika o -2pkt, koszt: 10 szt. złota)")
                     print("2 - zbroja płytowa (52 pancerza, koszt: 20 szt. złota)")
                     print("3 - kostur z czerwonym diademem (300 many, 80 obrażeń, 2 zaklęcia, koszt: 50 szt. złota)")
                     wybor = input(">")
@@ -270,14 +280,26 @@ def eksploracja():
                         Gracz.atak += 80
                         Gracz.przedmioty.append("kostur z czerwonym diademem")
                         print("Posiadasz kostur z czerwonym diademem w swoim ekwipunku")
+                    elif Gracz.złoto <= 9:
+                        print(f"Posiadasz jedynie {Gracz.złoto} złota")
+                    elif Gracz.udźwig <= 0:
+                        print("Nie masz dość miejsca w ekwipunku...")
                     else:
                         print("Niezrozumiała komenda")
 
                 elif decyzja == "2":
+                    if Gracz.upicie >= 4:
+                        print("Karczmarz wygania cię z tawerny, powodem jest twoje upicie")
+                        Statystyki.zadania_wykonane += 1
+                        Statystyki.zwyciestwa += 1
+                        Gracz.pd += 15
+                        print(PURPLE + "Wykonałeś ukryte zadanie" + RESET)
+                        print(GREEN + "+15 doświadczenia" + RESET)
+                        break
                     print("W progu wita się z tobą karczmarz.")
                     print("1 - Napij się (koszt 2szt. złota)")
                     print("2 - Porozmawiaj")
-                    print("3 - Zobacz co ma na sprzedaż")
+                    print("3 - Zobacz towary w tawernie")
                     print("4 - Wyjdź")
                     wybor = input(">")
                     if wybor == "1":
@@ -314,7 +336,7 @@ def eksploracja():
                                     print(PURPLE + f"Zadanie wykonane, otrzymujesz 35szt. złota oraz 15pd{RESET}")
                                 else:
                                     print("Karczmarz przypomina Ci o zleceniu na Ghoula. Twoim zadaniem jest zabicie"
-                                      " Ghoula z jaskinii")
+                                          " Ghoula z jaskinii")
                         elif len(Statystyki.karczmarz) == 1:
                             if Statystyki.zadanie_wilk == False:
                                 print("Karczmarz mówi Ci o zleceniu na Wilka. Twoim zadaniem będzie zabicie "
@@ -345,9 +367,57 @@ def eksploracja():
                                 else:
                                     print("Karczmarz przypomina Ci o zleceniu na Wilka. Twoim zadaniem jest zabicie"
                                           " Wilka z dzikiego lasu")
+                    elif wybor == "3":
+                        oferta_sklepu = ["jabłko", "mięso z królika", "pieczony udziec"]
+                        cena = [5, 10, 25]
+                        n = 1
+                        for i in oferta_sklepu:
+                            print(CYAN + f"{n} - {i} cena: {cena[n - 1]} złota, " + RESET)
+                            n += 1
+                        przedmiot = input(">")
 
-                elif decyzja == "5":
-                    break
+                        if przedmiot == "1" and Gracz.złoto >= cena[0]:
+                            Gracz.złoto -= cena[0]
+                            Gracz.zycie += 40
+                            Gracz.pd += 10
+                            print(f"Kupiłeś i zjadłeś {oferta_sklepu[0]}")
+                            print(GREEN + "+40 zdrowia" + RESET)
+                            print(GREEN + "+10 doświadczenia" + RESET)
+                        elif przedmiot == "2" and Gracz.złoto >= cena[1]:
+                            Gracz.złoto -= cena[1]
+                            Gracz.zycie += 40
+                            Gracz.pd += 10
+                            print(f"Kupiłeś i zjadłeś {oferta_sklepu[1]}")
+                            print(GREEN + "+50 zdrowia" + RESET)
+                            print(GREEN + "+15 doświadczenia" + RESET)
+                        elif przedmiot == "3" and Gracz.złoto >= cena[2]:
+                            Gracz.złoto -= cena[2]
+                            Gracz.zycie += 40
+                            Gracz.pd += 10
+                            print(f"Kupiłeś i zjadłeś {oferta_sklepu[2]}")
+                            print(GREEN + "+50 zdrowia" + RESET)
+                            print(GREEN + "+15 doświadczenia" + RESET)
+
+                elif decyzja == "3":
+                    print("W hotelu wita Cię recepcjonista")
+                    print("1 - wynajmij pokój na godzinę, koszt: 1szt złota")
+                    print("2 - wynajmij pokój na 2 godziny, koszt: 2szt złota")
+                    print("3 - wynajmij pokój na 8 godzin, koszt: 3szt złota")
+                    wybór = input(">")
+                    if wybór == "1":
+                        Gracz.energia += 1
+                        print("Czujesz się wypoczęty...")
+                        print(GREEN + "Zyskujesz 1 energii" + RESET)
+                    elif wybór == "2":
+                        Gracz.energia += 2
+                        print("Czujesz się wypoczęty...")
+                        print(GREEN + "Zyskujesz 2 energii" + RESET)
+                    elif wybór == "3":
+                        Gracz.energia += 4
+                        print("Czujesz się jak młody Bóg...")
+                        print(GREEN + "Zyskujesz 4 energii" + RESET)
+                    else:
+                        print("Nieznana komenda")
 
                 elif decyzja == "statystyki":
                     Gracz.statystyki()
@@ -355,13 +425,10 @@ def eksploracja():
                 elif decyzja == "z statystyki":
                     Gracz.statystyki_zaawansowane()
 
+                elif decyzja == "4":
+                    miasto = False
                 else:
                     print("Niezrozumiała komenda...")
-
-                miasto = False
-
-
-
 
         elif wybrana_lokacja == "z statystyki":
             Gracz.statystyki_zaawansowane()
