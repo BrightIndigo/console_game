@@ -16,4 +16,5 @@ class Statistics:
         self.zadania_wykonane = 0
         self.zadanie_ghoul = False
         self.zadanie_wilk = False
+        self.zadanie_sowa = False
         self.karczmarz = []

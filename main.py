@@ -2,6 +2,7 @@ import random
 import Player
 import Enemy
 import Statistics
+import sys
 
 RESET = "\033[0m"
 RED = "\033[91m"
@@ -16,6 +17,7 @@ Przeciwnik = Enemy.Enemy()
 Statystyki = Statistics.Statistics()
 przedzialek = "---------------------------------------------------------------------"
 def bitwa():
+    Gracz.energia -= 1
     bitwa = True
     while bitwa:
         Gracz.statystyki()
@@ -59,7 +61,7 @@ def bitwa():
             bitwa = False
             return True
     print("Koniec bitwy!")
-
+    Gracz.zycie = 1
 
 def eksploracja():
     eksploracja = True
@@ -80,7 +82,10 @@ def eksploracja():
         if wybrana_lokacja == "1" and Gracz.energia >= 1:
             print(f"Widzisz: {lokacje[1]}")
             while jaskinia == True:
-                print("1 - Wejdź, 2 - Omiń, 3 - Szukaj innej drogi, 4 - Poczekaj")
+                print("1 - Wejdź")
+                print("2 - Omiń")
+                print("3 - Szukaj innej drogi")
+                print("4 - Poczekaj")
                 decyzja = input(">")
                 if decyzja == "1":
                     print(f"Znajdujesz ghoula poziom {Przeciwnik.poziom}, zaczyna się bitwa...")
@@ -104,7 +109,10 @@ def eksploracja():
                     print(
                         "Bezpiecznie omijasz jaskinię, słyszysz jedynie niknące krzyki zza pleców, ale nie zważasz na to...")
                     Gracz.energia -= 1
-                    print("Męczysz się tą ucieczką, tracisz energię...")
+                    Statystyki.porażki += 1
+                    print("Męczysz się tą ucieczką...")
+                    print(RED + "-1 energii" + RESET)
+                    print(RED + "+1 porażki" + RESET)
                     jaskinia = False
                 elif decyzja == "3":
                     przypadki = {1: "Znajdujesz inną drogę...",
@@ -171,6 +179,60 @@ def eksploracja():
                 print("Otaczają Cię cienie.")
                 print("Czujesz niepokój, tracisz energię...")
                 Gracz.energia -= 1
+                print("Wybierz co chcesz zrobić:")
+                print("1 - wejść do lasu")
+                print("2 - ominąć")
+                print("3 - szukać innej drogi")
+                print("4 - poczekać")
+                decyzja = input(">")
+
+                if decyzja == "1":
+                    print("Jesteś na rozstaju dróg...")
+                    print("Wybierz kierunek w którym chcesz iść:")
+                    print("1 - w lewo")
+                    print("2 - w prosto")
+                    print("3 - w prawo")
+                    kierunek = input(">")
+                    if kierunek == "1":
+                        print("Spotykasz na swojej drodze wilka...")
+                        print("Atakuje Cię.")
+                        b = bitwa()
+                        if b == True:
+                            Statystyki.wilki += 1
+                            Statystyki.zwyciestwa += 1
+                            Gracz.przedmioty.append("Skóra wilka")
+                            Gracz.pd += 30
+                            print(GREEN + "Otrzymujesz skórę wilka oraz 30pd..." + RESET)
+                    elif kierunek == "2":
+                        if Statystyki.zadanie_sowa == False:
+                            Statystyki.zadanie_sowa = True
+                            Gracz.pd += 10
+                            Gracz.mana += 10
+                            Statystyki.zwyciestwa += 1
+                            print("Spotykasz magiczną sowę...")
+                            print(GREEN + "+10pd" + RESET)
+                            print(GREEN + "+10pkt many" + RESET)
+                        elif Statystyki.zadanie_sowa == True:
+                            print("Słyszysz jedynie podmuch wiatru, wśród wszechobecnej ciszy...")
+                    elif kierunek == "3":
+                        Gracz.energia -= 1
+                        Gracz.zycie -= 20
+                        Statystyki.porażki += 1
+                        Gracz.umiera()
+                        print("Potykasz się i tracisz przytomność...")
+                        print(RED + "-20hp" + RESET)
+                        print(RED + "-1 energii" + RESET)
+                        print(RED + "+1 porażki" + RESET)
+                    dziki_las = False
+                elif decyzja == "2":
+                    print(
+                        "Bezpiecznie omijasz dziki las, słyszysz jedynie niknące krzyki zza pleców, ale nie zważasz na to...")
+                    Gracz.energia -= 1
+                    Statystyki.porażki += 1
+                    print("Męczysz się tą ucieczką...")
+                    print(RED + "-1 energii" + RESET)
+                    print(RED + "+1 porażki" + RESET)
+                    dziki_las = False
 
 # lokacja 4 -----------------------------------------------------------------------------------------------
         #elif wybrana_lokacja == 4:

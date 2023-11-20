@@ -1,3 +1,5 @@
+import sys
+
 RESET = "\033[0m"
 RED = "\033[91m"
 GREEN = "\033[92m"
@@ -99,3 +101,6 @@ class Player:
                 print(YELLOW + f"Tworzysz magiczną barierę wokół siebie, która daje Ci 120pkt pancerza {RESET}")
             else:
                 print("Niezrozumiałe polecenie...")
+    def umiera(self):
+        if self.zycie <= 0:
+            sys.exit()
