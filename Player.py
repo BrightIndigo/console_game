@@ -24,6 +24,7 @@ class Player:
         self.złoto = 10
         self.rodzaj_obr = "miażdżone"
         self.upicie = 0
+        self.poziom = 0
 
     def statystyki(self):
         print(BLUE + f"Statystyki gracza: \nŻycie: {self.zycie}, Pancerz: {self.pancerz}, Atak: {self.atak}"
@@ -104,3 +105,15 @@ class Player:
     def umiera(self):
         if self.zycie <= 0:
             sys.exit()
+    
+    def dodaj_poziom(self):
+        awans = 50
+        akt_poz = 0
+        if self.pd >= awans and self.poziom == akt_poz:
+            self.zycie += 20
+            self.atak += 2
+            self.pancerz += 1
+            self.kondycja += 1
+            print(GREEN + f"Awansujesz na poziom {self.poziom}")
+            awans += awans
+            akt_poz += 1

@@ -53,6 +53,7 @@ def bitwa():
             Gracz.pd -= 5
             print(RED+"-5 doświadczenia, +1 porażki"+RESET)
             bitwa = False
+            Gracz.zycie = 1
             return False
         elif Przeciwnik.zycie <= 0:
             Statystyki.zwyciestwa += 1
@@ -62,7 +63,7 @@ def bitwa():
             bitwa = False
             return True
     print("Koniec bitwy!")
-    Gracz.zycie = 1
+    
 
 def eksploracja():
     eksploracja = True
@@ -73,14 +74,16 @@ def eksploracja():
                5: "miasto",
                }
 
-    while eksploracja == True:
+    while eksploracja == True and Gracz.zycie > 0:
+        Gracz.dodaj_poziom()
         jaskinia = True
         print(f"Wybierz gdzie chcesz się udać (1) - jaskinie, "
             f"(2) - pustkowia, (3) - dziki las, "
             f"(4) - opuszczona wioska, (5) - miasto :")
         wybrana_lokacja = input(">")
-
+#lokacja 1 -----------------------------------------------------------------------------------------------
         if wybrana_lokacja == "1" and Gracz.energia >= 1:
+            Gracz.dodaj_poziom()
             print(f"Widzisz: {lokacje[1]}")
             while jaskinia == True:
                 print("1 - Wejdź")
@@ -175,13 +178,57 @@ def eksploracja():
                     Gracz.statystyki_zaawansowane()
                 else:
                     print("Niezrozumiała komenda...")
-        elif Gracz.energia <= 0:
+        elif wybrana_lokacja == "1" or wybrana_lokacja == "2" or wybrana_lokacja == "3" or wybrana_lokacja == "4" and Gracz.energia <= 0:
             print("Nie masz wystarczająco dużo energii...")
 #lokacja 2 -----------------------------------------------------------------------------------------------
-        #elif wybrana_lokacja == 2:
-            #print(f"Podczas swojej tułaczki znajdujesz {lokacje[losowa_lokacja]}")
+        elif wybrana_lokacja == "2" and Gracz.energia >= 1:
+            Gracz.dodaj_poziom()
+            Gracz.energia -= 1
+            print(f"Podczas swojej tułaczki znajdujesz {lokacje[2]}")
+            print("Dostrzegasz niekończące się równiny")
+            pustkowia = True
+            while pustkowia == True:
+                print("Co robisz?") 
+                if Statystyki.pustkowie_ilosc < 3 and Statystyki.zadanie_pustkowie == False:
+                    print("1 - idziesz przed siebie")
+                    print("2 - wracasz")
+                    wybor = input(">")
+                    if wybor == "1":
+                        Statystyki.pustkowie_ilosc += 1
+                        print("Niestrudzenie przesz naprzód...")
+                        Gracz.pd += 10
+                        print(GREEN+"+10pd"+RESET)
+                        Gracz.energia -= 1
+                        print(RED+"-1 energii"+RESET)
+                    elif wybor == "2":
+                        print("Udało Ci się wrócić, ale przypłaciłeś to zdrowiem oraz energią...")
+                        print(RED+"-1 energii, -10 pkt. zdrowia"+RESET)
+                        Gracz.energia -= 1
+                        Gracz.zycie -= 10
+                    else:
+                        print("Niezrozumiała komenda...")
+                elif Statystyki.pustkowie_ilosc == 3 and Statystyki.zadanie_pustkowie == False:
+                    Statystyki.zadanie_pustkowie = True
+                    print("Spotykasz na swojej drodze dobrego pustelnika, oferuje Ci schronienie, złoto i  dobrą radę.")
+                    print("Zadanie wykonane...")
+                    print(GREEN + "+30pd, +30szt. złota" + RESET)
+                    Gracz.pd += 30
+                    Gracz.złoto += 30
+                    print("Miłej podróży wędrowcze!")
+                elif Statystyki.zadanie_pustkowie == True:
+                    print("Niczego więcej tu nie znajdziesz...")
+                    pustkowia = False
+                elif Gracz.energia <= 0: 
+                    print("Nie masz energii...")
+                    pustkowia = False
+                else:
+                    print("Error")
+                    pustkowia = False
+
+
 # lokacja 3 -----------------------------------------------------------------------------------------------
         elif wybrana_lokacja == "3" and Gracz.energia >= 1:
+            Gracz.dodaj_poziom()
             print(f"Podczas swojej tułaczki znajdujesz {lokacje[3]}")
             dziki_las = True
             while dziki_las == True:
@@ -245,9 +292,11 @@ def eksploracja():
 
 # lokacja 4 -----------------------------------------------------------------------------------------------
         #elif wybrana_lokacja == 4:
+            #Gracz.dodaj_poziom()
             #print(f"Podczas swojej tułaczki znajdujesz {lokacje[losowa_lokacja]}")
 #Miasto====================================================================================================
         elif wybrana_lokacja == "5":
+            Gracz.dodaj_poziom()
             miasto = True
             print(f"Dostrzegasz miasto")
             while miasto == True:
@@ -259,6 +308,7 @@ def eksploracja():
                         "1 - miecz dwuręczny (26 obr, zredukowanie obrażeń przeciwnika o -2pkt, koszt: 10 szt. złota)")
                     print("2 - zbroja płytowa (52 pancerza, koszt: 20 szt. złota)")
                     print("3 - kostur z czerwonym diademem (300 many, 80 obrażeń, 2 zaklęcia, koszt: 50 szt. złota)")
+                    print("4 - wyjście")
                     wybor = input(">")
                     if wybor == "1" and Gracz.złoto >= 10 and Gracz.udźwig >= 1:
                         Gracz.udźwig -= 1
@@ -284,11 +334,13 @@ def eksploracja():
                         print(f"Posiadasz jedynie {Gracz.złoto} złota")
                     elif Gracz.udźwig <= 0:
                         print("Nie masz dość miejsca w ekwipunku...")
+                    elif wybor == "4":
+                        continue
                     else:
                         print("Niezrozumiała komenda")
-
+                    
                 elif decyzja == "2":
-                    if Gracz.upicie >= 4:
+                    if Gracz.upicie >= 4 and Statystyki.zadanie_upicie == False:
                         print("Karczmarz wygania cię z tawerny, powodem jest twoje upicie")
                         Statystyki.zadania_wykonane += 1
                         Statystyki.zwyciestwa += 1
@@ -406,14 +458,17 @@ def eksploracja():
                     wybór = input(">")
                     if wybór == "1":
                         Gracz.energia += 1
+                        Gracz.upicie = 0
                         print("Czujesz się wypoczęty...")
                         print(GREEN + "Zyskujesz 1 energii" + RESET)
                     elif wybór == "2":
                         Gracz.energia += 2
+                        Gracz.upicie = 0
                         print("Czujesz się wypoczęty...")
                         print(GREEN + "Zyskujesz 2 energii" + RESET)
                     elif wybór == "3":
                         Gracz.energia += 4
+                        Gracz.upicie = 0
                         print("Czujesz się jak młody Bóg...")
                         print(GREEN + "Zyskujesz 4 energii" + RESET)
                     else:
@@ -432,11 +487,14 @@ def eksploracja():
 
         elif wybrana_lokacja == "z statystyki":
             Gracz.statystyki_zaawansowane()
+            Gracz.dodaj_poziom()
 
         elif wybrana_lokacja == "statystyki":
             Gracz.statystyki()
+            Gracz.dodaj_poziom()
 
         else:
             print("Niezrozumiała komenda...")
+            Gracz.dodaj_poziom()
 
 eksploracja()

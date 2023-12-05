@@ -19,3 +19,6 @@ class Statistics:
         self.zadanie_wilk = False
         self.zadanie_sowa = False
         self.zadanie_upicie = False
+        self.pustkowie_ilosc = 0
+        self.zadanie_pustkowie = False
+        
