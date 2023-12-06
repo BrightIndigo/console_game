@@ -58,7 +58,7 @@ class Player:
 
     def umiejetnosc(self, enemy):
         wybor = input(f"Wybierz umiejętność: koncentracja - 1, nieposkromiona siła - 2: ")
-        if self.mana > 0:
+        if self.mana >= 1:
             if wybor == "1":
                 if 50 <= self.zycie <= 90:
                     self.mana -= 2
@@ -79,11 +79,14 @@ class Player:
             print(GREEN + f"Możesz użyć umiejętności ponownie {RESET}")
 
     def przedmioty_specjalne(self, enemy):
-        if "tarcza z czarnym krzyżem" in self.przedmioty:
+        if "tarcza z czarnym krzyżem" in self.przedmioty and self.mana >= 1:
+            self.mana -= 3
             self.pancerz += 20
             enemy.atak -= 3
             print(YELLOW + f"Tarcza z czerwonym krzyżem daje Ci +20 pancerza i obniża przeciwnikowi"
-                           f"atak o -3 {RESET}")
+                           f" atak o -3 {RESET}")
+            print(RED + "Tracisz 3 pkt. many" + RESET)
+            
         if "złoty kielich z czerwonymi szmaragdami" in self.przedmioty:
             enemy.zycie -= 10
             self.zycie += 10
@@ -114,6 +117,7 @@ class Player:
             self.atak += 2
             self.pancerz += 1
             self.kondycja += 1
-            print(GREEN + f"Awansujesz na poziom {self.poziom}")
+            self.poziom += 1
+            print(GREEN + f"Awansujesz na poziom {self.poziom}" + RESET)
             awans += awans
             akt_poz += 1

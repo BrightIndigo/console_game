@@ -17,6 +17,7 @@ Przeciwnik = Enemy.Enemy()
 Statystyki = Statistics.Statistics()
 
 przedzialek = "---------------------------------------------------------------------"
+#bitwabitwabitwabitwabitwabitwabitwabitwabitwabitwabitwabitwabitwabitwabitwabitwabitwabitwabitwabitwabitwabitwabitwa
 def bitwa():
     Gracz.energia -= 1
     bitwa = True
@@ -38,7 +39,7 @@ def bitwa():
             Przeciwnik.umiejętność(Gracz)
 
         Gracz.przedmioty_specjalne(Przeciwnik)
-        decyzja_gracza = input("Wykonaj ruch: (atak - 1, leczenie - 2, umiejętność - 3): ")
+        decyzja_gracza = input("Wykonaj ruch: (1 - atak, 2 - leczenie, 3 - umiejętność, 4 - przedmiot specjalny): ")
 
         if decyzja_gracza == "1":
             Gracz.wykonaj_atak(Przeciwnik)
@@ -46,6 +47,10 @@ def bitwa():
             Gracz.leczenie()
         elif decyzja_gracza == "3":
             Gracz.umiejetnosc(Przeciwnik)
+        elif decyzja_gracza == "4" and Gracz.przedmioty != []:
+            Gracz.przedmioty_specjalne()
+        elif decyzja_gracza == "4" and Gracz.przedmioty == []:
+            print(YELLOW + "Nie masz żadnego przedmiotu którego możesz użyć!" + RESET)
 
         if Gracz.zycie <= 0:
             print("Przegrałeś!")
@@ -58,12 +63,17 @@ def bitwa():
         elif Przeciwnik.zycie <= 0:
             Statystyki.zwyciestwa += 1
             print("Wygrałeś!")
-            Gracz.pd += 10
+            wygrana = (Statystyki.zwyciestwa * 10) + Statystyki.zwyciestwa
+            Gracz.pd += wygrana
+            print(GREEN + f"+{wygrana} pd" + RESET)
             Przeciwnik.dodaj_poziom()
             bitwa = False
             return True
     print("Koniec bitwy!")
-    
+
+def porażka():
+    print("PRZEGRAŁEŚ!!!")
+    sys.exit()
 
 def eksploracja():
     eksploracja = True
@@ -98,18 +108,25 @@ def eksploracja():
                     if rezultat_bitwy == True:
                         Statystyki.ghoule += 1
                         print("Ghoul leży z odciętą głową... Posoka leje się z rozwartej szyi potwora.")
-                        przedmioty = ["łańcuch z niebieskim brylantem", "tarcza z czarnym krzyżem", "złoty kielich z czerwonymi szmaragdami"]
-                        przedmiot = random.choice(przedmioty)
-                        print(f"Chodząc po jaskinii dostrzegasz {przedmiot}. Czy chcesz go wziąć? (T) | (N)")
-                        czy = input(">")
-                        if czy == "t":
-                            Gracz.przedmioty.append(przedmiot)
-                            print(f"Bierzesz {przedmiot}")
-                        elif czy == "n":
-                            Gracz.pd += 8
-                            print("Zdobywasz 8 pd")
+                        if Statystyki.ghoule == 1:
+                            przedmioty = ["łańcuch z niebieskim brylantem", "tarcza z czarnym krzyżem", "złoty kielich z czerwonymi szmaragdami"]
+                            przedmiot = random.choice(przedmioty)
+                            print(f"Chodząc po jaskinii dostrzegasz {przedmiot}. Czy chcesz go wziąć? (T) | (N)")
+                            czy = input(">")
+                            if czy == "t":
+                                Gracz.przedmioty.append(przedmiot)
+                                print(f"Bierzesz {przedmiot}")
+                            elif czy == "n":
+                                Gracz.pd += 8
+                                print("Zdobywasz 8 pd")
                         else:
                             print("Niezrozumiała komenda")
+                    elif rezultat_bitwy == False:
+                        czy_przezyjesz = random.randint(1,2)
+                        if czy_przezyjesz == 1:
+                            porażka()
+                        elif czy_przezyjesz == 2:
+                            print(GREEN + "Cudem udaje Ci się ujść z życiem..." + RESET)
                     jaskinia = False
                 elif decyzja == "2":
                     print(
@@ -290,10 +307,21 @@ def eksploracja():
                     print(RED + "+1 porażki" + RESET)
                     dziki_las = False
 
-# lokacja 4 -----------------------------------------------------------------------------------------------
-        #elif wybrana_lokacja == 4:
-            #Gracz.dodaj_poziom()
-            #print(f"Podczas swojej tułaczki znajdujesz {lokacje[losowa_lokacja]}")
+#lokacja 4 -----------------------------------------------------------------------------------------------
+        elif wybrana_lokacja == "4":
+            Gracz.dodaj_poziom()
+            print(f"Podczas swojej tułaczki znajdujesz {lokacje[4]}")
+            print("Zostajesz zaatakowany przez ożywieńca!")
+            Przeciwnik.przedmioty.clear()
+            Przeciwnik.przedmioty.update({"wyszczerbiony topór": 5})
+            wynik_walki = bitwa()
+            if wynik_walki == True:
+                Gracz.przedmioty.append("wyszczerbiony topór")
+                print(GREEN + "Zdobywasz wyszczerbiony topór atak: 35, dodatkowa mana: +20" + RESET)
+                Gracz.atak += 35
+                Gracz.mana += 20
+            else:
+                porażka()
 #Miasto====================================================================================================
         elif wybrana_lokacja == "5":
             Gracz.dodaj_poziom()
@@ -304,6 +332,7 @@ def eksploracja():
                 decyzja = input(">")
                 if decyzja == "1":
                     print("Sprzedawca wita cię z uśmiechem i prezentuje swoje przedmioty...")
+                    print(BLUE + f"Posiadasz {Gracz.złoto} szt. złota" + RESET)
                     print(
                         "1 - miecz dwuręczny (26 obr, zredukowanie obrażeń przeciwnika o -2pkt, koszt: 10 szt. złota)")
                     print("2 - zbroja płytowa (52 pancerza, koszt: 20 szt. złota)")
@@ -498,3 +527,6 @@ def eksploracja():
             Gracz.dodaj_poziom()
 
 eksploracja()
+
+if Gracz.zycie <= 0:
+    porażka()

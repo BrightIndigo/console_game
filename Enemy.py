@@ -37,9 +37,14 @@ class Enemy:
             damage = self.atak
             if "nóż" in self.przedmioty:
                 damage *= self.przedmioty["nóż"]
+            if "wyszczerbiony topór" in self.przedmioty:
+                damage *= self.przedmioty["wyszczerbiony topór"]
             wytrzymalosc_gracza -= damage
             player.zycie = max(0, wytrzymalosc_gracza)
             print(RED + f"Przeciwnik zaatakował cię za {damage} obrażeń" + RESET)
+
+            
+
 
     def umiejętność(self, player):
         decyzja = random.randint(1, 3)
@@ -49,6 +54,7 @@ class Enemy:
             percentage = (number / whole_range) * 100
             wytrzymalosc_gracza = player.zycie + player.pancerz
             wytrzymalosc_gracza -= percentage
+            percentage = round(percentage, 2)
             print(RED + f"Przeciwnik zadał {percentage}% obrażeń")
         elif decyzja == 2:
             if 50 <= self.zycie <= 90:
