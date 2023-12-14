@@ -337,22 +337,26 @@ def eksploracja():
                         "1 - miecz dwuręczny (26 obr, zredukowanie obrażeń przeciwnika o -2pkt, koszt: 10 szt. złota)")
                     print("2 - zbroja płytowa (52 pancerza, koszt: 20 szt. złota)")
                     print("3 - kostur z czerwonym diademem (300 many, 80 obrażeń, 2 zaklęcia, koszt: 50 szt. złota)")
-                    print("4 - wyjście")
+                    print("4 - targuj cenę")
+                    print("5 - wyjdź")
                     wybor = input(">")
-                    if wybor == "1" and Gracz.złoto >= 10 and Gracz.udźwig >= 1:
+                    cena1 = 10
+                    cena2 = 20
+                    cena3 = 50
+                    if wybor == "1" and Gracz.złoto >= cena1 and Gracz.udźwig >= 1:
                         Gracz.udźwig -= 1
                         Gracz.złoto -= 10
                         Gracz.atak += 26
                         Przeciwnik.atak -= 2
                         Gracz.przedmioty.append("miecz dwuręczny")
                         print("Posiadasz teraz miecz dwuręczny w ekwipunku")
-                    elif wybor == "2" and Gracz.złoto >= 20 and Gracz.udźwig >= 1:
+                    elif wybor == "2" and Gracz.złoto >= cena2 and Gracz.udźwig >= 1:
                         Gracz.udźwig -= 1
                         Gracz.złoto -= 20
                         Gracz.pancerz += 52
                         Gracz.przedmioty.append("zbroja płytowa")
                         print("Posiadasz zbroję płytową w swoim ekwipunku")
-                    elif wybor == "3" and Gracz.złoto >= 50 and Gracz.udźwig >= 1:
+                    elif wybor == "3" and Gracz.złoto >= cena3 and Gracz.udźwig >= 1:
                         Gracz.udźwig -= 1
                         Gracz.złoto -= 50
                         Gracz.mana += 300
@@ -364,6 +368,30 @@ def eksploracja():
                     elif Gracz.udźwig <= 0:
                         print("Nie masz dość miejsca w ekwipunku...")
                     elif wybor == "4":
+                        utarg = random.randint(1, Gracz.umiejętność_targowania)
+                        dodaj_u = random.randint(1, 10)
+                        if utarg >= 2:
+                            print(GREEN + f"Udało Ci się namówić sprzedawcę do zejścia z ceny o {utarg}szt. złota" + RESET)
+                            cena1 -= utarg
+                            cena2 -= utarg
+                            cena3 -= utarg
+                        elif utarg == 1:
+                            print(RED+f"Nie udało się namówić sprzedawcy..."+RESET)
+                            dodaj_u = 0
+
+                        
+                        if dodaj_u < 5:
+                            Gracz.umiejętność_targowania += 1
+                            print(GREEN + "Twoja umiejętność targowania wzrasta o 1" + RESET)
+                        elif 9 >= dodaj_u >= 5 :
+                            Gracz.umiejętność_targowania += 2
+                            print(GREEN + "Twoja umiejętność targowania wzrasta o 2" + RESET)
+                        elif dodaj_u == 10:
+                            Gracz.umiejętność_targowania += 3
+                            print(GREEN + "Twoja umiejętność targowania wzrasta o 3" + RESET)
+                        elif dodaj_u == 0:
+                            print(RED+"Umiejętość targowania nie wzrasta..."+RESET)
+                    elif wybor == "5":
                         continue
                     else:
                         print("Niezrozumiała komenda")

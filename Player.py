@@ -16,7 +16,7 @@ class Player:
         self.mana = 10
 
         self.przedmioty = []
-        self.umiejętność_targowania = 0
+        self.umiejętność_targowania = 2
         self.kondycja = 0
         self.udźwig = 4
         self.energia = 2
